@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebShop</title>
+    <title>WebShop - @ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WebShop.styles.css" asp-append-version="true" />
@@ -20,11 +20,31 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Main page</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Contact">Contacts</a>
+                        </li>
+                        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Admin
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" asp-controller="Categories" asp-action="Index">Categories</a></li>
+                                <li><a class="dropdown-item" asp-controller="Producers" asp-action="Index">Producers</a></li>
+                                <li><a class="dropdown-item" asp-controller="Orders" asp-action="Index">Orders</a></li>
+                                <li><a class="dropdown-item" asp-controller="Roles" asp-action="Index">Roles and permissions</a></li>
+                                <li><a class="dropdown-item" asp-controller="Users" asp-action="Index">Users</a></li>
+                            </ul>
+                        </li>
+
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
