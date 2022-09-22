@@ -1,66 +1,82 @@
-﻿@model IEnumerable<WebShop.Models.Product>
+﻿@*@model IEnumerable<WebShop.Models.Product>*@
+@model WebShop.ViewModels.FilterViewModel
+
+@addTagHelper *, WebShop
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<div class="row">
+    <div class="col-md-9">
+        <h1>Products list</h1>
+    </div>
+    <div class="col-md-3" style="text-align: right">
+        <span id="count" style="color: blue; font-weight: bold">0</span>
+        <span id="amount" style="color: red; font-weight: bold">0.0</span>
+        &nbsp;&nbsp;&nbsp;
+        <a asp-controller="Orders" asp-action="Index" title="Go to cart">
+            <img src="~/Images/cart.png" alt="cart" width="50"/>
+        </a>
+    </div>
+</div>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    @if (User?.Identity?.Name == "vsh15975@gmail.com")
+    {
+        <a asp-action="Create">Create New</a>
+    }
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Image)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsAvaible)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Producer)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Image)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsAvaible)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.CategoryName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Producer.ProducerName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="row" id="gallery">
+    <!-- col-1 -->
+    <div class="col-md-9" style="padding: 0px 20px">
+        <div class="row">
+        @foreach(var item in Model.Products){
+            <div class="col-md-3">
+                <div class="card" style="width: 100%; margin-bottom: 10px">
+                    <img src="~/@item.Image" class="card-img-top" alt="Product image" style="height: 140px"/> 
+                    <div class="card-body" style="text-align:center">
+                        <input type="hidden" class="productId" value="@item.Id"/>
+                        <h5 class="card-title">@item.Name</h5>
+                        <h6>@item?.Category?.CategoryName</h6>
+                        <h4 style="color:red">@item?.Price</h4>
+                        @if((User?.Identity)!=null ? User.Identity.IsAuthenticated : false ){
+                            <button class="addToCart btn btn-sm btn-success">Add to the cart</button>
+                        }
+                        <div style="margin-top: 15px; font-size: 0.9em">
+                            <a asp-action="Details" asp-route-id="@item?.Id">Details</a><br/>
+                            @if (User?.Identity?.Name == "vsh15975@gmail.com"){
+                                <a asp-action="Edit" asp-route-id="@item?.Id">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@item?.Id">Delete</a>
+                            }
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        </div>
+        <page-link page-model="Model.PageViewModel" page-action="Index"></page-link>
+    </div>
+    <!-- col-2 -->
+    <div class="col-md-3" style="padding: 15px; border:1px solid silver">
+         <h5 style="text-align:center">Filters</h5>
+         <hr />
+         <form method="get">
+             <div class="form-group" >
+                <label class ="control-label">Category:</label>
+                <select name="cid" asp-items="Model.Categories" class="form-control"></select>
+             </div>
+            <div class="form-group">
+                <label class="control-label">Producer:</label>
+                <select name="pid" asp-items="Model.Producers" class="form-control"></select>
+            </div>
+            <p style="margin-top: 30px; text-align:center">
+                <input type="submit" value="Filter" class="btn btn-sm btn-primary" style="width: 120px"/>
+            </p>
+         </form>
+    </div>
+</div>
