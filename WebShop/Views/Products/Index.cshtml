@@ -80,3 +80,18 @@
          </form>
     </div>
 </div>
+
+
+@section scripts{
+    <script>
+        $(document).ready(()=>{
+            $('.addToCart').click((event) => {
+                let target = $(event.target);
+                let parent = target.parent();
+                let hidden = parent.find('.productId');
+                let pid = parseInt(hidden.val());
+                alert(pid);
+            })
+        });
+    </script>
+}
