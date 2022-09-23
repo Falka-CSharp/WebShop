@@ -7,7 +7,7 @@ namespace WebShop.Models
     {
         public int Id { get; set; }
         [Required]
-        [Display(Name="Name")]
+        [Display(Name = "Name")]
         public string? Name { get; set; }
         [Required]
         [Display(Name = "Price")]
@@ -31,5 +31,7 @@ namespace WebShop.Models
         public virtual Producer? Producer { get; set; }
 
         public virtual List<OrderItem>? Items { get; set; }
+
+        public virtual List<CartItem>? CartItems {get;set;}
     }
 }

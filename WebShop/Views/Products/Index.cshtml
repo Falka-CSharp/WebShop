@@ -16,7 +16,7 @@
         <span id="count" style="color: blue; font-weight: bold">0</span>
         <span id="amount" style="color: red; font-weight: bold">0.0</span>
         &nbsp;&nbsp;&nbsp;
-        <a asp-controller="Orders" asp-action="Index" title="Go to cart">
+        <a asp-controller="CartItems" asp-action="Index" title="Go to cart">
             <img src="~/Images/cart.png" alt="cart" width="50"/>
         </a>
     </div>
@@ -85,12 +85,34 @@
 @section scripts{
     <script>
         $(document).ready(()=>{
+            $.ajax({
+                type: 'POST',
+                url: '/CartItems/GetStatInfo',
+                dataType: 'json',
+                success: function (result) {
+                    $('#count').html(result.count);
+                    $('#amount').html(result.amount);
+                }
+            });
+
+
             $('.addToCart').click((event) => {
                 let target = $(event.target);
                 let parent = target.parent();
                 let hidden = parent.find('.productId');
                 let pid = parseInt(hidden.val());
-                alert(pid);
+                //let pid = parseInt($(event.target).parent().find('.productId').val()));
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/CartItems/AddProductToCart',
+                    data: {productId: pid},
+                    dataType: 'json',
+                    success: function(result){
+                        $('#count').html(result.count);
+                        $('#amount').html(result.amount);
+                    }
+                });
             })
         });
     </script>

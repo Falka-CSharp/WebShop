@@ -1,0 +1,65 @@
+﻿@model IEnumerable<WebShop.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Your cart</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Product)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ApplicationUser)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr class="userItems">
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApplicationUser.UserName)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<div class="row">
+    <div class="col-6">
+        <button class="btn btn-danger" id="del_button">Delete all items</button>
+    </div>
+    <div class="col-6">
+        <button class="btn btn-success float-end" id="order_button">Place order</button>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        $(document).ready(()=>{
+            $('#del_button').click(()=>{
+                $.ajax({
+                    type: 'POST',
+                    url: '/CartItems/DelUserProducts',
+                    dataType: 'json',
+                });
+                $('.userItems').remove();
+            });
+            
+        });
+    </script>
+}         

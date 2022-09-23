@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 using WebShop.Models;
 
 namespace WebShop.Data
@@ -15,5 +16,6 @@ namespace WebShop.Data
         public DbSet<Order>? Orders { get; set; }
         public DbSet<OrderItem>? OrderItems { get; set; }
         public DbSet<ApplicationUser>? ApplicationUsers { get; set; }
+        public DbSet<CartItem>? CartItems { get; set; }    
     }
 }

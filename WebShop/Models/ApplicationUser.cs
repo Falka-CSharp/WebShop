@@ -6,6 +6,7 @@ namespace WebShop.Models
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
 
-        public virtual List<Order> Orders { get; set; }
+        public virtual List<Order>? Orders { get; set; }
+        public virtual List<CartItem>? CartItems { get; set; }
     }
 }
