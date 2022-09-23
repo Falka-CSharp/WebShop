@@ -1,4 +1,5 @@
-﻿@model IEnumerable<WebShop.Models.CartItem>
+﻿@*@model WebShop.ViewModels.CartViewModel*@
+@model IEnumerable<WebShop.Models.CartItem>
 
 @{
     ViewData["Title"] = "Cart";
@@ -6,7 +7,7 @@
 }
 
 <h1>Your cart</h1>
-
+<div id="SuccessDiv"></div>
 <table class="table">
     <thead>
         <tr>
@@ -20,7 +21,8 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
         <tr class="userItems">
             <td>
                 @Html.DisplayFor(modelItem => item.Product.Name)
@@ -36,20 +38,36 @@
         </tr>
 }
     </tbody>
+    
 </table>
+<button class="btn btn-danger m-1" id="del_button">Delete all items</button>
+<div class="container-fluid order-div">
 
-<div class="row">
-    <div class="col-6">
-        <button class="btn btn-danger" id="del_button">Delete all items</button>
-    </div>
-    <div class="col-6">
-        <button class="btn btn-success float-end" id="order_button">Place order</button>
-    </div>
+    @*<form asp-action="RsvpForm" method="post" class="row g-3">*@
+        <form class="row g-3">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <label for="CustomerName" class="form-label">Customer full name:</label>
+            <input id="CustomerNameInp" type="text" placeholder="CustomerName" class="form-control">
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <label for="PhoneNumber" class="form-label">Customer phone number:</label>
+            <input id="PhoneNumberInp" type="text" placeholder="PhoneNumber" class="form-control">
+        </div>
+
+        <div class="col-md-6">
+            <label for="CustomerAddress">Delivery address:</label>
+            <input id="CustomerAddressInp" type="text" class="form-control" placeholder="CustomerAddress">
+        </div>
+    </form>
+    <button class="btn btn-success float-start m-1" id="order_button">Place order</button>
 </div>
+
+<h4 id="back_lnk"><a asp-controller="Products" asp-action="Index" class="link-primary">Back</a></h4>
 
 
 @section scripts{
     <script>
+        $('#back_lnk').toggle();
         $(document).ready(()=>{
             $('#del_button').click(()=>{
                 $.ajax({
@@ -59,7 +77,57 @@
                 });
                 $('.userItems').remove();
             });
-            
+
+            $('#order_button').click(() => {
+                let valid = true;
+                if($('#CustomerNameInp').val()==""){
+                    $('#CustomerNameInp').addClass('is-invalid');
+                    valid=false;
+                }
+                else
+                    $('#CustomerNameInp').removeClass('is-invalid');
+
+                if ($('#PhoneNumberInp').val() == "") {
+                    $('#PhoneNumberInp').addClass('is-invalid');
+                    valid=false;
+                }
+                else
+                    $('#PhoneNumberInp').removeClass('is-invalid');
+
+                if ($('#CustomerAddressInp').val() == ""){
+                    $('#CustomerAddressInp').addClass('is-invalid');
+                    valid=false;
+                }
+                else
+                    $('#CustomerAddressInp').removeClass('is-invalid');
+
+                if(valid){
+                    let name = $('#CustomerNameInp').val();
+                    let phone = $('#PhoneNumberInp').val();
+                    let address = $('#CustomerAddressInp').val()
+               
+                    $.ajax({
+                        type: 'POST',
+                        url: '/CartItems/PlaceUserOrder',
+                        data: {
+                            CustomerName: name,
+                            CustomerPhoneNumber: phone,
+                            CustomerAddress: address
+                        },
+                        dataType: 'json'
+                    });
+
+                    $('#del_button').click();
+
+                    $('#back_lnk').toggle();
+                    
+                    $('.btn-danger').hide();
+                    $('.table').hide();
+                    $('.order-div').hide();
+                    $('#SuccessDiv').append("<h3 class=\"text-success\">Thank you for order!</h3><br><h4>Our manager will contact you soon</h4>");
+
+                }
+            });
         });
     </script>
 }         

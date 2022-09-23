@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol;
 using WebShop.Data;
 using WebShop.Models;
+using WebShop.ViewModels;
 
 namespace WebShop.Controllers
 {
@@ -34,7 +35,45 @@ namespace WebShop.Controllers
             _context.CartItems.RemoveRange(_context.CartItems.Where(c => c.ApplicationUser == currentUser));
              _context.SaveChanges();
         }
+        [HttpPost]
+        public void PlaceUserOrder(string CustomerName, string CustomerPhoneNumber, string CustomerAddress)
+        {
+            var currentUser = _context?.ApplicationUsers?.Where(u => u.UserName == User.Identity.Name).First();
+            Console.WriteLine($"\n\n------{CustomerName} {CustomerPhoneNumber} {CustomerAddress} ----\n\n");
 
+            string orderNumber = currentUser?.Id + DateTime.Now;
+
+            Order order = new Order()
+            {
+                PersonName = CustomerName,
+                PhoneNumber = CustomerPhoneNumber,
+                Address = CustomerAddress,
+                Email = currentUser?.Email,
+                OrderDate = DateTime.Now,
+                UserId = currentUser?.Id,
+                OrderNumber = orderNumber
+            };
+
+
+            var currentUserCartItems = _context.CartItems
+                   .Include(x => x.ApplicationUser)
+                   .Include(x => x.Product)
+                   .Where(x => x.ApplicationUser.UserName == User.Identity.Name)
+                   .ToList();
+
+            List<OrderItem> items = new List<OrderItem>();
+            foreach (var item in currentUserCartItems)
+            {
+                items.Add(new OrderItem { Order = order, Product = item.Product });
+            }
+
+            _context?.Orders?.Add(order);
+            foreach(var item in items)
+                _context?.OrderItems?.Add(item);
+
+             _context.SaveChanges();
+
+        }
 
         [HttpPost]
         public StatInfo AddProductToCart(int productId)
@@ -81,7 +120,8 @@ namespace WebShop.Controllers
                     .Include(x => x.ApplicationUser)
                     .Include(x => x.Product)
                     .Where(x => x.ApplicationUser.UserName == User.Identity.Name);
-            //var applicationDbContext = _context.CartItems.Include(c => c.ApplicationUser).Include(c => c.Product);
+            // var applicationDbContext = _context.CartItems.Include(c => c.ApplicationUser).Include(c => c.Product);
+            //CartViewModel cvm = new CartViewModel { CartItems = await currentUserCartItems.ToListAsync() };
             return View(await currentUserCartItems.ToListAsync());
         }
 
