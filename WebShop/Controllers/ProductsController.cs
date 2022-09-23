@@ -11,6 +11,7 @@ using System.IO;
 using WebShop.Data;
 using WebShop.Models;
 using WebShop.ViewModels;
+using System.Xml.Linq;
 
 namespace WebShop.Controllers
 {
@@ -147,7 +148,8 @@ namespace WebShop.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,Image,IsAvaible,CategoryId,ProducerId")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,Image,IsAvaible,CategoryId,ProducerId")] Product product,
+            IFormFile image)
         {
             if (id != product.Id)
             {
@@ -156,10 +158,27 @@ namespace WebShop.Controllers
 
             if (ModelState.IsValid)
             {
+                //*
+                string path = "-1";
+                if (product.Image != null)
+                    path = product.Image;
+
+
                 try
                 {
-                    _context.Update(product);
+                    //*
+                    var name = Path.Combine(_env.WebRootPath + "/Images", Path.GetFileName(image.FileName));
+                    image.CopyTo(new FileStream(name, FileMode.Create, FileAccess.Write));
+                    product.Image = "Images/" + image.FileName;
+
                     await _context.SaveChangesAsync();
+                    //*
+                    if (path != "-1")
+                    {
+                        path = Path.Combine(_env.WebRootPath, path);
+                        if (System.IO.File.Exists(path))
+                            System.IO.File.Delete(path);
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -209,12 +228,24 @@ namespace WebShop.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Products'  is null.");
             }
             var product = await _context.Products.FindAsync(id);
+
             if (product != null)
             {
                 _context.Products.Remove(product);
             }
             
             await _context.SaveChangesAsync();
+
+            //*
+            if (product?.Image != null)
+            {
+                string path = Path.Combine(_env.WebRootPath, product?.Image);
+                if (System.IO.File.Exists(path))
+                {
+                    System.IO.File.Delete(path);
+                }
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
