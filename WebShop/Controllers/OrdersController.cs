@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebShop.Data;
 using WebShop.Models;
+using WebShop.ViewModels;
 
 namespace WebShop.Controllers
 {
@@ -41,8 +42,20 @@ namespace WebShop.Controllers
             {
                 return NotFound();
             }
-
-            return View(order);
+            var items = _context.OrderItems.Where(o => o.OrderId == order.Id).ToList();
+            Console.WriteLine($"Items length: {items.Count}");
+            
+            foreach(var item in items)
+            {
+                item.Product = _context.Products.Where(p => p.Id == item.ProductId).FirstOrDefault();
+                Console.WriteLine($"ITEM NAME -> {item.Product.Name}");
+            }
+            OrderDetailsViewModel odvm = new OrderDetailsViewModel
+            {
+                Order = order,
+                OrderItems = items
+            };
+            return View(odvm);
         }
 
         // GET: Orders/Create
